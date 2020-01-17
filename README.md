@@ -9,7 +9,7 @@ Usage
 
 This module can be plugged into scrapy with spider mixin:
 ```python
-from scrapy import spider
+from scrapy.spiders import Spider
 from scrapy_expand_start_urls import ExpandStartUrlsSpiderMixin
 
 class ExampleSpider(Spider, ExpandStartUrlsSpiderMixin):
