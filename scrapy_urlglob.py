@@ -1,9 +1,28 @@
-import itertools
+"""Scrapy spider middleware to expand start urls using curl-like url globbing"""
+
 import re
 
 
+class ExpandStartUrlsMiddleware(object):
+    @classmethod
+    def from_crawler(cls, crawler):
+        enabled = crawler.settings.getbool('URLGLOB_ENABLED', True)
+        return cls(enabled)
+
+    def __init__(self, enabled=True):
+        self.enabled = enabled
+
+    def process_start_requests(self, start_requests, spider):
+        for request in start_requests:
+            if self.enabled:
+                for url in expand_url(request.url):
+                    yield request.replace(url)
+            else:
+                yield request
+
+
 def expand_url(url):
-    """Expand curl-like url globbing sequence.
+    """Expand url using curl-like url globbing.
     See https://curl.haxx.se/docs/manpage.html#URL for expansion rules.
 
     >>> for url in expand_url('https://example.com/{foo,bar}?page=[1-3]'):
@@ -65,48 +84,3 @@ def expand_url(url):
                         yield x
             else:
                 yield url
-
-
-class ExpandStartUrlsMiddleware(object):
-    """Spider middleware which expands urls of start_requests"""
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        enabled = crawler.settings.getbool('URLGLOB_ENABLED')
-        return cls(enabled)
-
-    def __init__(self, enabled=True):
-        self.enabled = enabled
-
-    def process_start_requests(self, start_requests, spider):
-        for request in start_requests:
-            if self.enabled:
-                for url in expand_url(request.url):
-                    yield request.replace(url)
-            else:
-                yield request
-
-
-class ExpandStartUrlsMixin(object):
-    """Spider class mixin which expands start_urls attribute"""
-
-    def start_requests(self):
-        if self.crawler.settings.getbool('URLGLOB_ENABLED'):
-            self.start_urls = itertools.chain.from_iterable(
-                expand_url(url) for url in self.start_urls)
-        super(ExpandStartUrlsMixin, self).start_requests()
-
-
-def expand_start_urls(cls):  # FIXME not working
-    """Spider class decorator which expands start_urls attribute"""
-
-    _start_requests = cls.start_requests
-
-    def start_requests(self):
-        start_urls = self.start_urls
-        self.start_urls = (expand_url(url) for url in start_urls)
-        for request in _start_requests(self):
-            yield request
-
-    cls.start_requests = start_requests
-    return cls
