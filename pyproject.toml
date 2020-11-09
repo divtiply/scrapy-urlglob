@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "scrapy-expand-start-urls"
+name = "scrapy-urlglob"
 version = "0.1.0"
 description = "Expand start urls using curl-like url globbing sequence"
 authors = ["divtiply"]
