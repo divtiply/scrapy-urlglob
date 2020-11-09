@@ -1,5 +1,5 @@
-scrapy-expand-start-urls
-========================
+scrapy-urlglob
+==============
 
 Expand start urls using curl-like url globbing sequence.  
 See https://curl.haxx.se/docs/manpage.html#URL for expansion rules.
@@ -31,23 +31,23 @@ Usage
 This module can be plugged into scrapy with spider mixin:
 ```python
 from scrapy.spiders import Spider
-from scrapy_expand_start_urls import ExpandStartUrlsSpiderMixin
+from scrapy_urlglob import ExpandStartUrlsMixin
 
-class ExampleSpider(Spider, ExpandStartUrlsSpiderMixin):
+class ExampleSpider(Spider, ExpandStartUrlsMixin):
     start_urls = ['https://example.com/{foo,bar}?page=[1-3]']
 ```
 
 or by enabling spider middleware in the `settings.py`:
 ```python
 SPIDER_MIDDLEWARES.update({
-    'scrapy_expand_start_urls.ExpandStartUrlsSpiderMiddleware': 490,
+    'scrapy_urlglob.ExpandStartUrlsMiddleware': 490,
 })
 ```
 
 Settings
 --------
 
-* `EXPAND_START_URLS_ENABLED`\
+* `URLGLOB_ENABLED`\
    default: `True`
 
 License

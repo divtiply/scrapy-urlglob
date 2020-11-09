@@ -68,12 +68,12 @@ def expand_url(url):
                 yield url
 
 
-class ExpandStartUrlsSpiderMiddleware(object):
+class ExpandStartUrlsMiddleware(object):
     """Spider middleware which expands urls of start_requests"""
 
     @classmethod
     def from_crawler(cls, crawler):
-        enabled = crawler.settings.getbool('EXPAND_START_URLS_ENABLED')
+        enabled = crawler.settings.getbool('URLGLOB_ENABLED')
         return cls(enabled)
 
     def __init__(self, enabled=True):
@@ -88,14 +88,14 @@ class ExpandStartUrlsSpiderMiddleware(object):
                 yield request
 
 
-class ExpandStartUrlsSpiderMixin(object):
+class ExpandStartUrlsMixin(object):
     """Spider class mixin which expands start_urls attribute"""
 
     def start_requests(self):
-        if self.crawler.settings.getbool('EXPAND_START_URLS_ENABLED'):
+        if self.crawler.settings.getbool('URLGLOB_ENABLED'):
             self.start_urls = itertools.chain.from_iterable(
                 expand_url(url) for url in self.start_urls)
-        super(ExpandStartUrlsSpiderMixin, self).start_requests()
+        super(ExpandStartUrlsMixin, self).start_requests()
 
 
 def expand_start_urls(cls):  # FIXME not working
