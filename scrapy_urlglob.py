@@ -1,6 +1,5 @@
-import re
 import itertools
-import scrapy
+import re
 
 
 def expand_url(url):
